@@ -10,7 +10,7 @@ const handler = (res, r) => {
     let lastCursor = repos[repos.length-1].cursor;
     const data = JSON.stringify(r, null, 2);
     console.log(data)
-    console.log(`lastCursor: s<${lastCursor}>`)
+    console.log(`lastCursor: <${lastCursor}>`)
     res.render('pages/index',{ repos: repos, lastCursor: lastCursor, start: counter});
     counter += repos.length;
   } else {
