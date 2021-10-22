@@ -2,9 +2,66 @@ const express = require('express');
 const app = express()
 const { ApolloClient, InMemoryCache, HttpLink, gql } = require('@apollo/client');
 const fetch = require('node-fetch');
+let counter = 1;
+
+const handler = (res, r) => {
+  const repos = r.data.search.edges;
+  if (repos.length) {
+    let lastCursor = repos[repos.length-1].cursor;
+    const data = JSON.stringify(r, null, 2);
+    console.log(data)
+    console.log(`lastCursor: s<${lastCursor}>`)
+    res.render('pages/index',{ repos: repos, lastCursor: lastCursor, start: counter});
+    counter += repos.length;
+  } else {
+    console.log('No more repos found!')
+  }
+}
 
 //Fill in the GraphQL endpoint and your Github Secret Access Token inside secrets.
 const numRepos = Number(process.argv[2]) || 10;
+
+const firstQuery = gql`
+{
+  search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: ${numRepos} ) {
+    repositoryCount
+    edges {
+      cursor
+      node {
+        ... on Repository {
+          nameWithOwner
+          description
+          url
+          stargazers {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+const subsequentQueries = (cursor) => gql`
+      {
+        search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: ${numRepos}, after: "${cursor}") {
+          repositoryCount
+          edges {
+            cursor
+            node {
+              ... on Repository {
+                nameWithOwner
+                description
+                url
+                stargazers {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+`
 
 const cache = new InMemoryCache();
 const client = new ApolloClient({
@@ -20,80 +77,15 @@ app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
   client
-    .query({
-      query: gql`
-      {
-        search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: ${numRepos} ) {
-          repositoryCount
-          edges {
-            cursor
-            node {
-              ... on Repository {
-                nameWithOwner
-                description
-                url
-                stargazers {
-                  totalCount
-                }
-              }
-            }
-          }
-        }
-      }
-      
-`})
-    .then(r => {
-      const repos = r.data.search.edges;
-      console.log(repos.length);
-      console.log(repos[repos.length]-1);
-
-      let lastCursor = repos[repos.length-1].cursor;
-
-      console.log(lastCursor)
-      const data = JSON.stringify(r, null, 2);
-      console.log(data)
-      res.render('pages/index',{ repos: repos, lastCursor: lastCursor});
-      //res.send(data)
-    })
+    .query({query: firstQuery})
+    .then(r => handler(res,r))
     .catch(error => console.error(error))
 });
 
 app.get('/next/:cursor', function(req, res) {
   client
-    .query({
-      query: gql`
-      {
-        search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: ${numRepos}, after: "${req.params.cursor}") {
-          repositoryCount
-          edges {
-            cursor
-            node {
-              ... on Repository {
-                nameWithOwner
-                description
-                url
-                stargazers {
-                  totalCount
-                }
-              }
-            }
-          }
-        }
-      }
-      
-`})
-    .then(r => {
-      const repos = r.data.search.edges;
-      const data = JSON.stringify(r, null, 2);
-      console.log(repos.length);
-      console.log(repos[repos.length]-1);
-      let lastCursor = repos[repos.length-1].cursor;
-
-      console.log(lastCursor)
-      console.log(data)
-      res.render('pages/index',{ repos: repos, lastCursor: lastCursor});
-      //res.send(data)
-    })
+    .query({ query: subsequentQueries(req.params.cursor)})
+    .then(r => handler(res,r))
     .catch(error => console.error(error))
 });
 
