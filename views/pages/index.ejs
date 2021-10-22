@@ -16,14 +16,17 @@
     <ul>
         <% repos.forEach(function(repo) { %>
           <li>
-            <a href="repo.url" target="_blank">
-                <strong><%= repo.nameWithOwner %></strong>
+            <a href="<%= repo.node.url %>" target="_blank">
+                <strong><%= repo.node.nameWithOwner %></strong>
             </a>
-            <%= repo.description %>
+            <%= repo.node.description %>
+            <!-- <%= repo.cursor %> -->
           </li>
         <% }); %>
       </ul>
-  </div>
+      <a href="/next/<%= lastCursor %>">
+        <button type="button" class="btn btn-primary btn-sm float-right">Next extensions</button>
+      </a>
 </main>
 
 <footer>
