@@ -9,7 +9,7 @@ const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: new HttpLink({
     uri: "https://api.github.com/graphql", fetch, headers: {
-      'Authorization': `Bearer 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`,
+      'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`,
     },
   }),
   cache
@@ -20,7 +20,8 @@ app.set('view engine', 'ejs');
 app.get('/', function(req, res) {
   client
     .query({
-      query: gql`{
+      query: gql`
+{
   search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: 10) {
     repositoryCount
     nodes {
@@ -54,4 +55,4 @@ app.get('/about', function(req, res) {
   res.render('pages/about');
 });
 
-app.listen(8000, () => console.log(`Example app listening on port 8000!`))
+app.listen(8000, () => console.log(`App listening on port 8000!`))
