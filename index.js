@@ -2,19 +2,21 @@ const express = require('express');
 const app = express()
 const { ApolloClient, InMemoryCache, HttpLink, gql } = require('@apollo/client');
 const fetch = require('node-fetch');
-let counter = 1;
 
 const handler = (res, r) => {
+  //console.log(r);
   const repos = r.data.search.edges;
+  const repoCount = r.data.search.repositoryCount
   if (repos.length) {
     let lastCursor = repos[repos.length-1].cursor;
     const data = JSON.stringify(r, null, 2);
     console.log(data)
     console.log(`lastCursor: <${lastCursor}>`)
-    res.render('pages/index',{ repos: repos, lastCursor: lastCursor, start: counter});
-    counter += repos.length;
+    res.render('pages/index',{ repos: repos, lastCursor: lastCursor });
+    console.log(`repoCount=${repoCount}`)
   } else {
-    console.log('No more repos found!')
+      console.log('No more repos found!');
+      console.log(`Array came empty repoCount=${repoCount}`)
   }
 }
 

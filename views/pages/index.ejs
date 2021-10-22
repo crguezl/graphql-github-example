@@ -13,7 +13,7 @@
   <div class="jumbotron">
     <h1>Most Starred GitHub Cli Extensions</h1>
    
-    <ol start="<%= start %>">
+      <ol>
         <% repos.forEach(function(repo) { %>
           <li>
             <a href="<%= repo.node.url %>" target="_blank">
@@ -23,11 +23,11 @@
           </li>
         <% }); %>
       </ol>
-      <% if (lastCursor) {%>
+ 
         <a href="/next/<%= lastCursor %>">
             <button type="button" class="btn btn-primary btn-sm float-right">Next extensions</button>
         </a>
-      <% }%>
+ 
 </main>
 
 <footer>
