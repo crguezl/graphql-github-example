@@ -9,5 +9,6 @@ Run `npm i`and then `npm start`. Visit <localhost:8000>
 ## Related Links
 
 * [Graphql Pagination gist](https://gist.github.com/obahareth/d974afa16ac84182abc293b306e25928): GitHub GraphQL API Starred Repositories Examples With Pagination
+  - See branch offset for a demo
 * Watch the tutorial [video](https://youtu.be/YxgNZgOKBzQ).
 
