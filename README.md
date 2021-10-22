@@ -6,7 +6,8 @@ Run `npm i`and then `npm start`. Visit <localhost:8000>
 
 * [EJS tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-ejs-to-template-your-node-application)
 
-## Related video
+## Related Links
 
+* [Graphql Pagination gist](https://gist.github.com/obahareth/d974afa16ac84182abc293b306e25928)
 * Watch the tutorial [video](https://youtu.be/YxgNZgOKBzQ).
 
