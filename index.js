@@ -1,3 +1,4 @@
+const base64 = require("base-64");
 const express = require('express');
 const app = express()
 const { ApolloClient, InMemoryCache, HttpLink, gql } = require('@apollo/client');
@@ -11,7 +12,9 @@ const handler = (res, r) => {
     const data = JSON.stringify(r, null, 2);
     console.log(data)
     console.log(`lastCursor: s<${lastCursor}>`)
-    res.render('pages/index',{ repos: repos, lastCursor: lastCursor, start: counter});
+    console.log(`base64.decode(lastCursor): <${base64.decode(lastCursor)}>`)
+    console.log(`base64.encode('cursor:'+counter+repos.length-1): ${base64.encode('cursor:'+(counter+repos.length-1))}`)
+    res.render('pages/index',{ repos: repos, lastCursor: base64.encode('cursor:'+(counter+repos.length-1)), start: counter});
     counter += repos.length;
   } else {
     console.log('No more repos found!')
