@@ -8,37 +8,50 @@ const fetch = require('node-fetch');
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: process.env['GRAPHQL_ENDPOINT'], fetch, headers: {
-      'Authorization': `Bearer ${process.env['GITHUB_API_TOKEN']}`,
+    uri: "https://api.github.com/graphql", fetch, headers: {
+      'Authorization': `Bearer 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`,
     },
   }),
   cache
 });
 
+app.set('view engine', 'ejs');
+
 app.get('/', function(req, res) {
   client
     .query({
       query: gql`{
-  search(query: "topic:alexa-skill-template sort:updated-desc", type: REPOSITORY, first: 5) {
+  search(query: "topic:gh-extension sort:stars", type: REPOSITORY, first: 10) {
     repositoryCount
     nodes {
       ... on Repository {
         nameWithOwner
         description
-        updatedAt
-        createdAt
-        diskUsage
+        url
+        stargazers {
+          totalCount
+        }
+        #updatedAt
+        #createdAt
+        #diskUsage
       }
     }
   }
 }
 `})
-    .then(res => {
-      const data = JSON.stringify(res, null, 2);
+    .then(r => {
+      const repos = r.data.search.nodes;
+      const data = JSON.stringify(r, null, 2);
       console.log(data)
+      res.render('pages/index',{ repos: repos});
+      //res.send(data)
     })
     .catch(error => console.error(error))
-  res.send('Check your Console for the JSON you requested!')
+});
+
+// about page
+app.get('/about', function(req, res) {
+  res.render('pages/about');
 });
 
 app.listen(8000, () => console.log(`Example app listening on port 8000!`))

@@ -7,6 +7,10 @@ This is code for building an application that uses GraphQL to query Github's Top
 1. A Github account with developer access, to be able to access your own token.
 2. An account on Replit.com (the free account will work)
 
+## EJS
+
+* [EJS tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-ejs-to-template-your-node-application)
+
 ## Using this code
 
 1. Watch the tutorial [video](https://youtu.be/YxgNZgOKBzQ).
