@@ -1,7 +1,9 @@
+const base64 = require("base-64")
 const express = require('express');
 const app = express()
 const { ApolloClient, InMemoryCache, HttpLink, gql } = require('@apollo/client');
 const fetch = require('node-fetch');
+const numRepos = Number(process.argv[2]) || 10;
 
 const handler = (res, r) => {
   //console.log(r);
@@ -12,7 +14,13 @@ const handler = (res, r) => {
     const data = JSON.stringify(r, null, 2);
     console.log(data)
     console.log(`lastCursor: <${lastCursor}>`)
-    res.render('pages/index',{ repos: repos, lastCursor: lastCursor });
+    console.log(`base64.decode(lastCursor): <${base64.decode(lastCursor)}>`)
+    // Tricky!! See [How to search specific page through GitHub API V4](https://stackoverflow.com/questions/64115904/how-to-search-specific-page-through-github-api-v4) in StackOverflow
+    let offset = Number(base64.decode(lastCursor).replace(/^cursor:/,''))-repos.length+1
+    console.log(`offset=${offset}`)
+    console.log(`base64.encode('cursor:'+numRepos+repos.length-1): ${base64.encode('cursor:'+(numRepos+repos.length-1))}`)
+  
+    res.render('pages/index',{ repos: repos, lastCursor: lastCursor, offset: offset });
     console.log(`repoCount=${repoCount}`)
   } else {
       console.log('No more repos found!');
@@ -20,8 +28,6 @@ const handler = (res, r) => {
   }
 }
 
-//Fill in the GraphQL endpoint and your Github Secret Access Token inside secrets.
-const numRepos = Number(process.argv[2]) || 10;
 
 const firstQuery = gql`
 {
@@ -96,4 +102,4 @@ app.get('/about', function(req, res) {
   res.render('pages/about');
 });
 
-app.listen(8000, () => console.log(`App listening on port 8000!`))
+app.listen(7000, () => console.log(`App listening on port 7000!`))

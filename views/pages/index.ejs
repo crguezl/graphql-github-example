@@ -13,7 +13,7 @@
   <div class="jumbotron">
     <h1>Most Starred GitHub Cli Extensions</h1>
    
-      <ol>
+      <ol start="<%= offset %>">
         <% repos.forEach(function(repo) { %>
           <li>
             <a href="<%= repo.node.url %>" target="_blank">
