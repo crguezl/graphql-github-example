@@ -74,9 +74,9 @@ const subsequentQueries = (cursor) => gql`
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: "https://api.github.com/graphql", fetch, headers: {
-      'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`,
-    },
+    uri: "https://api.github.com/graphql", 
+    fetch, 
+    headers: { 'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`, },
   }),
   cache
 });
